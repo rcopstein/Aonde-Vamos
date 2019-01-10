@@ -6,11 +6,17 @@ export function mdValidarData(req : Request, res : Response, next : NextFunction
     var data : Date;
 
     // Montar objeto data
-    if (req.body.data) data = new Date(req.body.data);
-    else return res.status(400).send("Parâmetro 'data' não foi encontrado na requisição!");
+    if (req.params.ano && req.params.mes && req.params.dia) {
+        var ano = req.params.ano;
+        var mes = req.params.mes;
+        var dia = req.params.dia;
+
+        data = new Date(ano + '-' + mes + '-' + dia);
+    }
+    else return res.status(400).send("Data não foi encontrado na requisição!");
 
     // Validar objeto data
-    if (!data || !(data instanceof Date) || isNaN(data.getTime())) return res.status(400).send("Parâmetro 'data' é inválido!");
+    if (!data || !(data instanceof Date) || isNaN(data.getTime())) return res.status(400).send("Data é inválida!");
 
     // Associar data à requisição
     if (!req.params.interno) req.params.interno = {};
