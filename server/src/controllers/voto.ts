@@ -1,4 +1,4 @@
-import { mesmoDia } from "../util";
+import { mesmoDia, addDias, addHoras, addMinutos } from "../util";
 import { Voto } from "../models/voto";
 import { Usuario } from "../models/usuario";
 import { Restaurante } from "../models/restaurante";
@@ -23,6 +23,19 @@ export class VotoController {
 
         var result = this._votos.find( item => mesmoDia(data, item.dataVotacao) && item.usuario == usuario );
         return result ? result : null;
+
+    }
+
+    public getIntervaloVotacao(data : Date) : [Date, Date] {
+
+        var inicio = new Date(data.getTime());
+        inicio = addHoras(inicio, 12);
+        inicio = addDias(inicio, -1);
+
+        var fim = new Date(data.getTime());
+        fim = addHoras(fim, 12);
+
+        return [inicio, fim];
 
     }
 
