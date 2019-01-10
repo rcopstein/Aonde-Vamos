@@ -8,6 +8,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 import * as restauranteRoute from '../routes/restaurante';
+import * as votacaoRoute from '../routes/votacao';
+
 restauranteRoute.Init(app);
+votacaoRoute.Init(app);
 
 export default app;

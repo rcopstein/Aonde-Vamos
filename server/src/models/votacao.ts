@@ -1,18 +1,24 @@
 import { Usuario } from "./usuario";
 import { Restaurante } from "./restaurante";
 import { Voto } from "./voto";
+import { calculaSemana, mesmoDia } from "../util";
 
 export class Votacao {
 
     // Variaveis
 
     private _data : Date;
+    private _semana : number;
     private _votos : Array<Voto>;
 
     // Propriedades
 
     get data() : Date {
         return this._data;
+    }
+
+    get semana() : number {
+        return this._semana;
     }
 
     get votos() : Array<Voto> {
@@ -27,15 +33,9 @@ export class Votacao {
         return false;
     }
 
-    private verificaDataMesmoDia(voto : Voto) : boolean {
-        return voto.data.getFullYear() == this._data.getFullYear() &&
-               voto.data.getMonth() == this._data.getMonth() &&
-               voto.data.getDate() == this._data.getDate();
-    }
-
     public addVoto(voto : Voto) : boolean {
         if (this.verificaUsuarioDuplicado(voto)) return false;
-        if (!this.verificaDataMesmoDia(voto)) return false;
+        if (!mesmoDia(voto.data, this._data)) return false;
         this._votos.push(voto);
         return true;
     }
@@ -75,6 +75,7 @@ export class Votacao {
     constructor(data : Date) {
         this._data = data;
         this._votos = new Array<Voto>();
+        this._semana = calculaSemana(data);
     }
 
 }

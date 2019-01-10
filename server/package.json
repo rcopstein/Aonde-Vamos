@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "compile": "tsc",
-    "test": "mocha -r ts-node/register test/**/*.spec.ts"
+    "test": "mocha -r ts-node/register test/*.spec.ts test/**/*.spec.ts"
   },
   "author": "Rafael Copstein",
   "license": "ISC",
