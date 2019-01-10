@@ -1,15 +1,12 @@
-import { Usuario } from "./usuario";
 import { Restaurante } from "./restaurante";
-import { Voto } from "./voto";
-import { calculaSemana, mesmoDia } from "../util";
 
 export class Votacao {
 
     // Variaveis
 
     private _data : Date;
-    private _semana : number;
-    private _votos : Array<Voto>;
+    private _vencedor : Restaurante;
+    private _totalVotos : Array<[string, number]>;
 
     // Propriedades
 
@@ -17,65 +14,20 @@ export class Votacao {
         return this._data;
     }
 
-    get semana() : number {
-        return this._semana;
+    get vencedor() : Restaurante {
+        return this._vencedor;
     }
 
-    get votos() : Array<Voto> {
-        return this._votos;
-    }
-
-    // Metodos
-
-    private verificaUsuarioDuplicado(voto : Voto) : boolean {
-        let prevVoto = this._votos.filter( item => { return item.usuario == voto.usuario; } );
-        if (prevVoto.length > 0) return true;
-        return false;
-    }
-
-    public addVoto(voto : Voto) : boolean {
-        if (this.verificaUsuarioDuplicado(voto)) return false;
-        if (!mesmoDia(voto.data, this._data)) return false;
-        this._votos.push(voto);
-        return true;
-    }
-
-    public vencedor() : Restaurante | null {
-
-        let ultData : Date = null;
-        let maxVotos : number = 0;
-        let vencedor : Restaurante = null;
-        let contagem : Map<Restaurante, number> = new Map<Restaurante, number>();
-
-        this._votos.forEach(item => {
-            let cont = contagem.get(item.restaurante) | 0;
-            cont += 1;
-
-            contagem.set(item.restaurante, cont);
-
-            let flag = false;
-            if (cont > maxVotos) flag = true;
-            else if (cont == maxVotos && item.data < ultData) flag = true;
-            else if (cont == maxVotos && item.data == ultData && item.restaurante.nome < vencedor.nome) flag = true;
-            
-            if (flag) {
-                vencedor = item.restaurante;
-                ultData = item.data;
-                maxVotos = cont;
-            }
-
-        });
-
-        return vencedor;
-
+    get totalVotos() : Array<[string, number]> {
+        return this._totalVotos;
     }
 
     // Construtor
 
-    constructor(data : Date) {
+    constructor(data : Date, vencedor : Restaurante, contagem : Map<string, number>) {
         this._data = data;
-        this._votos = new Array<Voto>();
-        this._semana = calculaSemana(data);
+        this._vencedor = vencedor;
+        this._totalVotos = Array.from(contagem.entries());
     }
 
 }

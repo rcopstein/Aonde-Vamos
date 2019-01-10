@@ -1,60 +1,64 @@
-import { mesmoDia } from "../util";
+import { Voto } from "../models/voto";
 import { Votacao } from "../models/votacao";
 import { Restaurante } from "../models/restaurante";
 
+import _VotoController, { VotoController } from '../controllers/voto';
+
 export class VotacaoController {
-
-    // Variaveis
-
-    _votacoes : Array<Votacao>;
 
     // Metodos
 
-    public listVotacoes(offset : number = 0, length : number = 10) : Array<Votacao> {
+    private static calculaVencedor(votos : Array<Voto>) : [Restaurante, Map<string, number>] {
 
-        if (length == 0 || offset >= this._votacoes.length) return [];
+        let ultData : Date = null;
+        let maxVotos : number = 0;
+        let vencedor : Restaurante = null;
+        let contagem : Map<string, number> = new Map<string, number>();
 
-        var result = [];
-        for (var i = Math.min(this._votacoes.length, offset + length) - 1; i >= offset; i--) result.push(this._votacoes[i]);
-        return result;
+        votos.forEach(item => {
+            let cont = contagem.get(item.restaurante.id) | 0;
+            cont += 1;
+
+            contagem.set(item.restaurante.id, cont);
+
+            let flag = false;
+            if (cont > maxVotos) flag = true;
+            else if (cont == maxVotos && item.dataVoto.getTime() < ultData.getTime()) flag = true;
+            else if (cont == maxVotos && item.dataVoto.getTime() == ultData.getTime() && item.restaurante.nome < vencedor.nome) flag = true;
+            
+            if (flag) {
+                ultData = ultData == null || item.dataVoto.getTime() > ultData.getTime() ? item.dataVoto : ultData;
+                vencedor = item.restaurante;
+                maxVotos = cont;
+            }
+
+        });
+
+        return [vencedor, contagem];
 
     }
 
-    public listVotacoesPorSemana(semana : number) : Array<Votacao> {
+    public getVotacaoPorDia(data : Date) : Votacao {
 
-        var result = new Array<Votacao>();
-        this._votacoes.forEach( item => { if (item.semana == semana) result.push(item); });
-        return result;
+        // Encontrar todos os votos naquele dia
+        let votos = this.votoController.listVotosPorDia(data);
 
-    }
+        // Calcular o vencedor
+        let resultado = VotacaoController.calculaVencedor(votos);
 
-    public getVotacaoPorDia(data : Date) : Votacao | null {
+        // Criar objeto Votacao
+        let votacao = new Votacao(data, resultado[0], resultado[1]);
 
-        return this._votacoes.find( item => mesmoDia(data, item.data) );
-
-    }
-
-    public addVotacao(data : Date) {
-
-        this._votacoes.push(new Votacao(data));
-
-    }
-
-    public count() : number {
-
-        return this._votacoes.length;
+        // Retornar
+        return votacao;
 
     }
 
     // Construtor
 
-    constructor() {
-        this._votacoes = new Array<Votacao>();
-        this.addVotacao(new Date(2019,  0,  9));
-        this.addVotacao(new Date(2019,  0,  7));
-        this.addVotacao(new Date(2019, 11,  9));
-        this.addVotacao(new Date(2019, 11, 10));
-        this.addVotacao(new Date(2018, 11, 12));
-    }
+    constructor(private votoController : VotoController) {}
 
 }
+
+let controller = new VotacaoController(_VotoController);
+export default controller;

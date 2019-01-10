@@ -19,3 +19,21 @@ export function mesmoDia(data1 : Date, data2 : Date) : boolean {
            data1.getDate() == data2.getDate();
 
 }
+
+export function addMinutos(data : Date, minutos : number) : Date {
+
+    return new Date(data.getTime() + minutos * 60000);
+
+}
+
+export function addHoras(data : Date, horas : number) : Date {
+
+    return addMinutos(data, horas * 60);
+
+}
+
+export function addDias(data : Date, dias : number) : Date {
+
+    return addHoras(data, dias * 24);
+
+}

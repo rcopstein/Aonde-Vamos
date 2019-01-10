@@ -5,14 +5,19 @@ export class Voto {
 
     // Variaveis
 
-    private _data : Date;
-    private _usuario : Usuario;
+    private _dataVoto    : Date;
+    private _dataVotacao : Date;
+    private _usuario     : Usuario;
     private _restaurante : Restaurante;
 
     // Propriedades
 
-    get data() : Date {
-        return this._data;
+    get dataVoto() : Date {
+        return this._dataVoto;
+    }
+
+    get dataVotacao() : Date {
+        return this._dataVotacao;
     }
 
     get usuario() : Usuario {
@@ -25,9 +30,10 @@ export class Voto {
 
     // Construtor
 
-    constructor(data : Date, usuario : Usuario, restaurante : Restaurante) {
-        this._data = data;
+    constructor(dataVotacao : Date, dataVoto : Date, usuario : Usuario, restaurante : Restaurante) {
         this._usuario = usuario;
+        this._dataVoto = dataVoto;
+        this._dataVotacao = dataVotacao;
         this._restaurante = restaurante;
     }
 

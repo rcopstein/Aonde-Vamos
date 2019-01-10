@@ -1,65 +1,69 @@
 import { expect } from 'chai';
 import 'mocha';
 
+import mock from '../mockData';
 import { VotacaoController } from '../../src/controllers/votacao';
-import { calculaSemana } from '../../src/util';
+import { VotoController } from '../../src/controllers/voto';
+import { addHoras } from '../../src/util';
+import { Votacao } from '../../src/models/votacao';
 
 describe('Votacao Controller', () => {
 
-  it('deve devolver a votacao do dia especificado', () => {
-    
-    var data = new Date(2019, 0, 9);
-    var controller = new VotacaoController();
-    var result = controller.getVotacaoPorDia(data);
+  var controller : VotacaoController;
+  var votoController : VotoController;
 
-    expect(result, "Resultado é nulo!").to.not.be.null;
-    expect(result, "Resultado é indefinido!").to.not.be.undefined;
-    expect(result.data.getTime(), "Data do resultado é inesperado!").to.equal(data.getTime());
+  beforeEach( () => {
+
+    votoController = new VotoController();
+    controller = new VotacaoController(votoController);
 
   });
 
-  it ('deve devlover as votacoes da semana especificada', () => {
+  it ('deve calcular corretamente o vencedor de uma votação quando este tem mais votos', () => {
 
-    var data = new Date(2019, 0, 9);
-    var semana = calculaSemana(data);
+    var votacao : Votacao;
+    var data = new Date('2019-01-01');
 
-    var controller = new VotacaoController();
-    var result = controller.listVotacoesPorSemana(semana);
+    votoController.addVoto(data, addHoras(data, 1), mock.usuario1, mock.restaurante1);
+    votoController.addVoto(data, addHoras(data, 2), mock.usuario2, mock.restaurante1);
 
-    expect(result, "Resultado é nulo!").to.not.be.null;
-    expect(result, "Resultado é indefinido!").to.not.be.undefined;
-    result.forEach( item => expect(calculaSemana(item.data)).to.be.equal(semana));
+    votacao = controller.getVotacaoPorDia(data);
 
-  });
-
-  it ('deve devolver uma lista com o tamanho especificado ou menor', () => {
-
-    var controller = new VotacaoController();
-
-    for (var i = 0; i <= controller.count(); i++) {
-        var result = controller.listVotacoes(undefined, i);
-
-        expect(result, "Resultado é nulo para n = " + i + "!").to.not.be.null;
-        expect(result, "Resultado é indefinido para n = " + i + "!").to.not.be.undefined;
-        expect(result.length, "Tamanho do vetor é maior que o esperado!").to.be.lte(i);
-    }
-  });
-
-  it ('deve devolver uma lista vazia caso offset seja maior ou igual ao tamanho máximo', () => {
-
-    var controller = new VotacaoController();
-    var result = controller.listVotacoes(controller.count());
-    expect(result).to.be.empty;
+    expect(votacao.data.getTime()).to.be.equal(data.getTime());
+    expect(votacao.vencedor).to.be.equal(mock.restaurante1);
+    expect(votacao.totalVotos.length).to.be.equal(1);
 
   });
 
-  it ('deve adicionar um novo item na lista', () => {
+  it ('deve calcular corretamente o vencedor de uma votação quando há um empate por número de votos', () => {
 
-    var controller = new VotacaoController();
-    var oldCount = controller.count();
-    controller.addVotacao(new Date());
+    var votacao : Votacao;
+    var data = new Date('2019-01-01');
 
-    expect(controller.count()).to.be.equal(oldCount + 1);
+    votoController.addVoto(data, addHoras(data, 3), mock.usuario1, mock.restaurante1);
+    votoController.addVoto(data, addHoras(data, 2), mock.usuario2, mock.restaurante2);
+
+    votacao = controller.getVotacaoPorDia(data);
+    expect(votacao.totalVotos.length).to.be.equal(2);
+    expect(votacao.vencedor).to.be.equal(mock.restaurante2);
+    expect(votacao.data.getTime()).to.be.equal(data.getTime());
+
+  });
+
+  it ('deve calcular corretamente o vencedor de uma votação quando há um empate por número de votos e por data', () => {
+
+    var votacao : Votacao;
+    var data = new Date('2019-01-01');
+
+    votoController.addVoto(data, addHoras(data, 3), mock.usuario1, mock.restaurante1);
+    votoController.addVoto(data, addHoras(data, 3), mock.usuario2, mock.restaurante2);
+
+    votacao = controller.getVotacaoPorDia(data);
+    let deveGanhar = mock.restaurante1.nome < mock.restaurante2.nome ? mock.restaurante1 : mock.restaurante2;
+
+    expect(votacao.totalVotos.length).to.be.equal(2);
+    expect(votacao.vencedor).to.be.equal(deveGanhar);
+    expect(votacao.data.getTime()).to.be.equal(data.getTime());
 
   });
 

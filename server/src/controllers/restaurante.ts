@@ -40,3 +40,6 @@ export class RestauranteController {
     }
 
 }
+
+let controller = new RestauranteController();
+export default controller;

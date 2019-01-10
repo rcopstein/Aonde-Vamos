@@ -1,42 +1,34 @@
-import { Express, Request } from 'express';
-import { VotoController } from '../controllers/voto';
-import { Voto } from '../models/voto';
+import { Express, Request, Response, NextFunction } from 'express';
+import VotoController from '../controllers/voto';
 
-function dataValida(req : Request) : Date | null {
+import { mdValidarData } from './data';
+import { mdValidarUsuario } from './usuario';
+import { mdValidarRestaurante } from './restaurante';
 
-    var data = new Date(req.params.ano, req.params.mes, req.params.dia);
-    if (!data) return null;
-    return data;
+export function mdValidaVoto(req : Request, res : Response, next : NextFunction) {
+
+    let result = VotoController.getVoto(req.params.interno.data, req.params.interno.usuario);
+    if (result) res.status(403).send("Esse usuário já votou nessa votação!");
+    else next(); 
 
 }
 
 export function Init(app : Express) {
-    
-    let controller = new VotoController();
 
-    app.get('/votos/:ano/:mes/:dia', (req, res) => { 
-
-        var data = dataValida(req);
-        if (!data) { res.status(400).send('Parametros de data inválidos!'); return; }
+    app.get('/votos', mdValidarData, (req, res) => { 
         
-        var result = controller.listVotosPorDia(data);
+        var data = req.params.interno.data;
+        var result = VotoController.listVotosPorDia(data);
+
         if (result == null) res.status(404).send("Votacao no dia " + data + " não foi encontrada!");
         else res.send(result);
 
     });
 
-    app.post('/votos/:ano/:mes/:dia', (req, res) => {
+    app.post('/votos', mdValidarData, mdValidarUsuario, mdValidarRestaurante, mdValidaVoto, (req, res) => {
         
-        var data = dataValida(req);
-        if (!data) { res.status(400).send('Parametros de data inválidos!'); return; }
-
-        if (!req.body.matricula) { res.status(400).send("Parâmetro 'matricula' faltando!"); return; }
-        if (!req.body.restaurante) { res.status(400).send("Parâmetro 'restaurante' faltando!"); return; }
-
-        var result = controller.addVoto(data, req.body.matricula, req.body.restaurante);
-
-        if (result) res.sendStatus(200);
-        else res.sendStatus(400);
+        VotoController.addVoto(req.params.interno.data, new Date(), req.params.interno.usuario, req.params.interno.restaurante);
+        res.sendStatus(200);
 
     });
 

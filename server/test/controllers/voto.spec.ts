@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import 'mocha';
 
-import { mesmoDia } from '../../src/util';
+import mock from '../mockData';
+import { mesmoDia, addDias } from '../../src/util';
 import { VotoController } from '../../src/controllers/voto';
 
 describe('Voto Controller', () => {
@@ -11,8 +12,8 @@ describe('Voto Controller', () => {
     var data = new Date(2019, 0, 9);
     var controller = new VotoController();
 
-    controller.addVoto(data, "194382000-2", "1");
-    controller.addVoto(new Date(data.getTime() + 1 * 24 * 60 * 60000), "847928374-5", "2");
+    controller.addVoto(data, data, mock.usuario1, mock.restaurante1);
+    controller.addVoto(addDias(data, 1), data, mock.usuario2, mock.restaurante2);
 
     var result = controller.listVotosPorDia(data);
 
@@ -20,7 +21,9 @@ describe('Voto Controller', () => {
     expect(result, "Resultado é indefinido!").to.not.be.undefined;
 
     result.forEach( item => {
-        expect(mesmoDia(item.data, data)).to.be.true;
+        expect(mesmoDia(item.dataVotacao, data)).to.be.true;
+        expect(item.usuario).to.not.be.equal(mock.usuario2);
+        expect(item.restaurante).to.not.be.equal(mock.restaurante2);
     });
 
   });
@@ -30,15 +33,15 @@ describe('Voto Controller', () => {
     var data = new Date(2019, 0, 9);
     var controller = new VotoController();
 
-    controller.addVoto(data, "194382000-2", "1");
-    var result = controller.getVoto(data, "194382000-2");
+    controller.addVoto(data, data, mock.usuario1, mock.restaurante1);
+    var result = controller.getVoto(data, mock.usuario1);
 
     expect(result, "Resultado é nulo!").to.not.be.null;
     expect(result, "Resultado é indefinido!").to.not.be.undefined;
-    expect(result.usuario.matricula, "Usuario não bate com o solicitado").to.be.equal("194382000-2");
-    expect(mesmoDia(result.data, data), "Data não bate com a solicitada").to.be.true;
+    expect(result.usuario, "Usuario não bate com o solicitado").to.be.equal(mock.usuario1);
+    expect(mesmoDia(result.dataVotacao, data), "Data não bate com a solicitada").to.be.true;
 
-    var result = controller.getVoto(new Date(data.getTime() - 1 * 24 * 60 * 60000), "194382000-2");
+    var result = controller.getVoto(new Date(data.getTime() - 1 * 24 * 60 * 60000), mock.usuario1);
 
     expect(result, "Resultado não é nulo!").to.be.null;
     expect(result, "Resultado é indefinido!").to.not.be.undefined;
