@@ -1,5 +1,6 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import VotoController from '../controllers/voto';
+import VotacaoController from '../controllers/votacao';
 
 import { mdValidarData } from './data';
 import { mdValidarUsuario } from './usuario';
@@ -7,9 +8,17 @@ import { mdValidarRestaurante } from './restaurante';
 
 export function mdValidaVoto(req : Request, res : Response, next : NextFunction) {
 
-    let result = VotoController.getVoto(req.params.interno.data, req.params.interno.usuario);
-    if (result) res.status(403).send("Esse usuário já votou nessa votação!");
-    else next(); 
+    let data = req.params.interno.data;
+    let usuario = req.params.interno.usuario;
+    let restaurante = req.params.interno.restaurante;
+
+    let result = VotoController.getVoto(data, usuario);
+    if (result) return res.status(403).send("Esse usuário já votou nessa votação!");
+
+    let candidatos = VotacaoController.listCandidatosPorDia(data).filter( i => i == restaurante );
+    if (candidatos.length == 0) return res.status(403).send("Não é possível votar nesse restaurante pois ele já foi escolhido essa semana!");
+
+    next(); 
 
 }
 

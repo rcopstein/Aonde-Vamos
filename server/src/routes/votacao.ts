@@ -15,4 +15,13 @@ export function Init(app : Express) {
 
     });
 
+    app.get('/votacao/candidatos', mdValidarData, (req, res) => {
+
+        var data = req.params.interno.data;
+        var result = VotacaoController.listCandidatosPorDia(data);
+
+        res.json(result);
+
+    });
+
 }

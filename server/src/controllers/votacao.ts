@@ -1,8 +1,11 @@
+import { addDias } from "../util";
+
 import { Voto } from "../models/voto";
 import { Votacao } from "../models/votacao";
 import { Restaurante } from "../models/restaurante";
 
 import _VotoController, { VotoController } from '../controllers/voto';
+import _RestauranteController, { RestauranteController } from "./restaurante";
 
 export class VotacaoController {
 
@@ -54,11 +57,33 @@ export class VotacaoController {
 
     }
 
+    public listCandidatosPorDia(data : Date) : Array<Restaurante> {
+
+        // Pegar a lista de todos os restaurantes
+        var restaurantes = this.restauranteController.listRestaurantes();
+
+        // Encontrar aqueles que já foram vencedores na semana corrente
+        let exvencedores = new Array<Restaurante>();
+        let dia = (data.getDay() + 1) % 8;
+
+        for (var i = 1; i <= dia; i++) {
+            var votacao = this.getVotacaoPorDia(addDias(data, -i));
+            exvencedores.push(votacao.vencedor);
+        }
+
+        // Remover esses restaurantes da lista
+        restaurantes = restaurantes.filter( i => exvencedores.filter( j => i == j ).length == 0 );
+
+        // Devolver os restaurantes restantes
+        return restaurantes;
+
+    }
+
     // Construtor
 
-    constructor(private votoController : VotoController) {}
+    constructor(private votoController : VotoController, private restauranteController : RestauranteController) {}
 
 }
 
-let controller = new VotacaoController(_VotoController);
+let controller = new VotacaoController(_VotoController, _RestauranteController);
 export default controller;

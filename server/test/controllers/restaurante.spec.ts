@@ -1,13 +1,23 @@
 import { expect } from 'chai';
 import 'mocha';
 
+import mock from '../mockData';
 import { RestauranteController } from '../../src/controllers/restaurante';
 
 describe('Restaurante Controller', () => {
 
+  var controller : RestauranteController;
+
+  beforeEach( () => {
+
+    controller = new RestauranteController();
+    controller.addRestaurante(mock.restaurante1);
+    controller.addRestaurante(mock.restaurante2);
+
+  });
+
   it('deve devolver o restaurante pedido', () => {
     
-    var controller = new RestauranteController();
     var result = controller.getRestaurante('1');
 
     expect(result, "Resultado é nulo!").to.not.be.null;
@@ -17,8 +27,6 @@ describe('Restaurante Controller', () => {
   });
 
   it ('deve devolver uma lista com o tamanho especificado ou menor', () => {
-
-    var controller = new RestauranteController();
 
     for (var i = 0; i <= controller.count(); i++) {
         var result = controller.listRestaurantes(undefined, i);
@@ -31,7 +39,6 @@ describe('Restaurante Controller', () => {
 
   it ('deve devolver uma lista vazia caso offset seja maior ou igual ao tamanho máximo', () => {
 
-    var controller = new RestauranteController();
     var result = controller.listRestaurantes(controller.count());
     expect(result).to.be.empty;
 
