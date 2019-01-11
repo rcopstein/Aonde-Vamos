@@ -16,18 +16,21 @@ export class DataService {
   }
 
   agora() : Date {
-    //return new Date();
-    return new Date(2019, 0, 9, 10, 0, 0, 0);
+    return new Date();
   }
 
   amanha() : Date {
     return new Date(this.data.getTime() + 24 * 60 * 60000);
   }
 
+  utcParaLocal(data : Date) : Date {
+    return new Date(data.getTime() + data.getTimezoneOffset() * 60000);
+  }
+
   // Construtor
 
   constructor() {
-    this.data = new Date(2019, 0, 10);
+    this.data = new Date();
     this.data.setHours(0, 0, 0, 0);
 
     console.log(this.data);

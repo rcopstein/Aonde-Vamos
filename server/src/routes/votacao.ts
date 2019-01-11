@@ -15,6 +15,7 @@ export function mdValidaVoto(req : Request, res : Response, next : NextFunction)
 
     // Verifica se a data do voto é válida
     var intervalo = VotoController.getIntervaloVotacao(data);
+
     if (intervalo[0].getTime() > dataVoto.getTime()) return res.status(403).send("Horário de votação ainda não iniciado!");
     if (intervalo[1].getTime() <= dataVoto.getTime()) return res.status(403).send("Horário de votação já encerrado!");
 

@@ -18,7 +18,7 @@ export class UsuarioController {
 
     constructor() {
         this._usuarios = new Array<Usuario>();
-        this._usuarios.push( new Usuario("João da Silva", "194382000-2") );
+        this._usuarios.push( new Usuario("João da Silva", "123456789-0") );
         this._usuarios.push( new Usuario("Paulo Fagundes", "847928374-5") );
         this._usuarios.push( new Usuario("Nicole Barros", "937291748-4") );
         this._usuarios.push( new Usuario("Janete Carvalho", "205748203-3") );

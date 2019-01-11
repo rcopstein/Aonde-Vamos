@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Votacao } from 'src/app/model/votacao';
 import { Restaurante } from 'src/app/model/restaurante';
 
@@ -49,6 +49,35 @@ export class VotacaoService {
 
       // Fazer uma chamada HTTP
       this.http.get<Array<Restaurante>>(url).subscribe( result => resolve(result) );
+
+    });
+
+    // Retorna Promise
+    return promise;
+
+  }
+
+  async votar(data : Date, matricula : string, restaurante : string) : Promise<any> {
+
+    // Montar URL
+    let url = this.montarURL(this.baseURL, data);
+
+    // Montar parametros da request
+    let body = {
+      'restaurante' : restaurante,
+      'matricula' : matricula
+    }
+
+    // Criar Promise
+    let promise = new Promise<any>( (resolve, _) => {
+
+      // Fazer uma chamada HTTP
+      this.http.post(url, body, { responseType: "text" }).subscribe(
+
+        _ => resolve(true),
+        error => { console.log(error); resolve(error) }
+
+      );
 
     });
 

@@ -104,11 +104,13 @@ export class VotacaoController {
     getIntervaloVotacao(data : Date) : [Date, Date] {
 
         var inicio = new Date(data.getTime());
-        inicio = addHoras(inicio, 12);
         inicio = addDias(inicio, -1);
+        inicio = addHoras(inicio, 12);
+        inicio = addMinutos(inicio, inicio.getTimezoneOffset());
 
         var fim = new Date(data.getTime());
         fim = addHoras(fim, 12);
+        fim = addMinutos(fim, fim.getTimezoneOffset());
 
         return [inicio, fim];
 

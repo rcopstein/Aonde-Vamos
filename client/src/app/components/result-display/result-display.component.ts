@@ -22,8 +22,9 @@ export class ResultDisplayComponent implements OnInit {
     let hoje = this.dataService.hoje();
     let agora = this.dataService.agora();
     var votacao = await this.votacaoService.getResultado(hoje);
+    let final = this.dataService.utcParaLocal(new Date(votacao._final));
 
-    if (!votacao || (new Date(votacao._final)).getTime() > agora.getTime()) {
+    if (!votacao || final.getTime() > agora.getTime()) {
       this.deveAparecer = false;
     }
     else {

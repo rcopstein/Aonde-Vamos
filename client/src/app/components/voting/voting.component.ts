@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Restaurante } from 'src/app/model/restaurante';
 import { DataService } from 'src/app/services/data/data.service';
 import { VotacaoService } from 'src/app/services/votacao/votacao.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-voting',
@@ -12,8 +13,10 @@ export class VotingComponent implements OnInit {
 
   // Variaveis
 
-  matricula : string;
   titulo : string = "";
+  habilitado : boolean = true;
+
+  matricula : string;
   selecionado : string;
   candidatos : Array<Restaurante>;
 
@@ -21,7 +24,26 @@ export class VotingComponent implements OnInit {
 
   onSubmit() {
 
-    console.log("Form foi submetido com o valor " + this.selecionado + "!");
+    this.habilitado = false;
+    let promise = this.votacaoService.votar(this.dataService.hoje(), this.matricula, this.selecionado);
+
+    promise.then( result => {
+
+      if (!(result instanceof HttpErrorResponse)) return console.log("Sucesso!");
+
+      if (result.status == 400) {
+        console.log("Matrícula possui um valor inválido!");
+      }
+      else if (result.status == 404) {
+        console.log("Não foi encontrado um usuário com essa matrícula!");
+      }
+      else {
+        console.log("Falha ao enviar formulário, tente novamente!");
+      }
+
+      this.habilitado = true;
+
+    });
 
   }
 
@@ -33,7 +55,8 @@ export class VotingComponent implements OnInit {
     let votacaoHoje = await this.votacaoService.getResultado(hoje);
 
     let agora = this.dataService.agora();
-    let final = new Date(votacaoHoje._final);
+    let final = this.dataService.utcParaLocal(new Date(votacaoHoje._final));
+
     if (final.getTime() > agora.getTime()) {
 
       this.titulo = "Votação de hoje";
