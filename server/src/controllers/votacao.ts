@@ -83,8 +83,11 @@ export class VotacaoController {
         // Calcular o vencedor
         let resultado = this.calculaVencedor(votos);
 
+        // Calcular as datas de início e final
+        let intervalo = this.getIntervaloVotacao(data);
+
         // Criar objeto Votacao
-        let votacao = new Votacao(data, resultado[0], resultado[1]);
+        let votacao = new Votacao(data, intervalo[1], intervalo[0], resultado[0], resultado[1]);
 
         // Retornar
         return votacao;

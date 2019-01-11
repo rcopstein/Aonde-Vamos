@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { addMinutos } from '../util';
 
 export function mdValidarData(req : Request, res : Response, next : NextFunction) {
 
@@ -20,7 +21,7 @@ export function mdValidarData(req : Request, res : Response, next : NextFunction
 
     // Associar data à requisição
     if (!req.params.interno) req.params.interno = {};
-    req.params.interno.data = data;
+    req.params.interno.data = addMinutos(data, -data.getTimezoneOffset());
 
     // Continuar
     next();

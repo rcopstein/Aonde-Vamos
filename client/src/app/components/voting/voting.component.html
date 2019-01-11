@@ -1,0 +1,24 @@
+<div class="wrapper">
+	<form #voteForm="ngForm" (ngSubmit)="onSubmit()">
+
+		<h3>{{ titulo }}</h3>
+
+		<label class="texto">
+			<span>Matrícula:</span>
+			<input type="text" name="matricula" [(ngModel)]="matricula" placeholder="123456789-0">
+		</label>
+
+		<div *ngIf="candidatos && candidatos.length > 0" class="items">
+			<div *ngFor="let candidato of candidatos; first as isFirst">
+				<label class="item">
+					<input type="radio" name="restaurante" [value]="candidato._id" [(ngModel)]="selecionado">
+					<span>{{ candidato._nome }}</span>
+				</label>
+				<br />
+			</div>
+		</div>
+
+		<button type="submit" [disabled]="!selecionado">Enviar</button>
+
+	</form>
+</div>
