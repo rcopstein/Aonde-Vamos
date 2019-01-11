@@ -11,6 +11,7 @@ import { VotingComponent } from './components/voting/voting.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { ResultDisplayComponent } from './components/result-display/result-display.component';
+import { VotesDisplayComponent } from './components/votes-display/votes-display.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { ResultDisplayComponent } from './components/result-display/result-displ
     VotingComponent,
     FooterComponent,
     ResultDisplayComponent,
-    HeaderComponent
+    HeaderComponent,
+    VotesDisplayComponent
   ],
   imports: [
     FormsModule,

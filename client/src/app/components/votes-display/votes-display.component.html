@@ -1,0 +1,17 @@
+<div class="wrapper">
+
+  <div *ngFor="let voto of _votos" class="item">
+
+    <div class="title">{{ voto[0]._nome }}</div>
+
+    <div class="progressBar">
+      <div class="outerProgressBar">
+        <div class="innerProgressBar" [style.width.%]="voto[1]"></div>
+      </div>
+    </div>
+
+    <div class="voteCount">{{ voto[1] }}%</div>
+
+  </div>
+
+</div>

@@ -1,14 +1,16 @@
-form
-    font-family: 'Raleway', sans-serif
+@import '~src/variables'
+
+.wrapper
+    font-family: $font-stack
     padding: 16px 0
 
     h3
-        //color: #C3E5FE
-        color: #7CC6FE
+        color: $primary-color
         padding-bottom: 24px
         font-weight: 600
         margin: 0px
-        font-family: 'Raleway', sans-serif
+
+form
 
     p
         margin: 0px
@@ -53,11 +55,11 @@ form
         cursor: pointer
 
         &:hover
-            background: #66A3D0
+            background: $primary-color-hover
 
         &:active
-            background: #5B91B9
+            background: $primary-color-pressed
 
         &:disabled
             cursor: default
-            background: #EEEEEE
+            background: $primary-color-disabled

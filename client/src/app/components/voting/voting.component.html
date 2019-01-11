@@ -1,7 +1,10 @@
 <div class="wrapper">
-	<form #voteForm="ngForm" (ngSubmit)="onSubmit()">
 
-		<h3>{{ titulo }}</h3>
+	<h3>{{ titulo }}</h3>
+
+	<app-votes-display [hidden]="mostrarVotacao"></app-votes-display>
+
+	<form #voteForm="ngForm" (ngSubmit)="onSubmit()" [hidden]="!mostrarVotacao">
 
 		<label class="texto">
 			<span>Matrícula:</span>
