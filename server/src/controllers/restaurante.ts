@@ -20,7 +20,9 @@ export class RestauranteController {
 
     public getRestaurante(id : string) : Restaurante | null {
 
-        return this._restaurantes.find( item => item.id == id );
+        let result = this._restaurantes.find( item => item.id == id );
+        if (result) return result;
+        return null;
 
     }
 
