@@ -1,4 +1,4 @@
-<div *ngIf="deveAparecer" class="wrapper">
+<div *ngIf="resultado" class="wrapper">
 
   <div *ngIf="resultado._vencedor">
     <h4>Hoje vamos no <span>{{ resultado._vencedor._nome }}</span>!</h4>
@@ -9,4 +9,5 @@
     <h4>Não temos almoço hoje!</h4>
     <p>Não houveram votos para o almoço de hoje. Tente novamente amanhã.</p>
   </div>
+  
 </div>

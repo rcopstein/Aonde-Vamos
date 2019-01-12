@@ -23,7 +23,7 @@ export class VotesDisplayComponent {
     valor.forEach( x => total += x[1]);
     valor.forEach( async x => {
 
-      let pct = Math.round(x[1] / total) * 100;
+      let pct = x[1] / total * 100;
       let restaurante = await this.restauranteService.getRestaurante(x[0]);
 
       if (!restaurante) return;

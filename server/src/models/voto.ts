@@ -1,4 +1,3 @@
-import { Usuario } from "./usuario";
 import { Restaurante } from "./restaurante";
 
 export class Voto {
@@ -7,7 +6,7 @@ export class Voto {
 
     private _dataVoto    : Date;
     private _dataVotacao : Date;
-    private _usuario     : Usuario;
+    private _ip          : string;
     private _restaurante : Restaurante;
 
     // Propriedades
@@ -20,8 +19,8 @@ export class Voto {
         return this._dataVotacao;
     }
 
-    get usuario() : Usuario {
-        return this._usuario;
+    get ip() : string {
+        return this._ip;
     }
 
     get restaurante() : Restaurante {
@@ -30,8 +29,8 @@ export class Voto {
 
     // Construtor
 
-    constructor(dataVotacao : Date, dataVoto : Date, usuario : Usuario, restaurante : Restaurante) {
-        this._usuario = usuario;
+    constructor(dataVotacao : Date, dataVoto : Date, ip : string, restaurante : Restaurante) {
+        this._ip = ip;
         this._dataVoto = dataVoto;
         this._dataVotacao = dataVotacao;
         this._restaurante = restaurante;

@@ -1,15 +1,12 @@
 <div class="wrapper">
 
+	<app-result-display></app-result-display>
+
 	<h3>{{ titulo }}</h3>
 
 	<app-votes-display [hidden]="mostrarVotacao"></app-votes-display>
 
 	<form #voteForm="ngForm" (ngSubmit)="onSubmit()" [hidden]="!mostrarVotacao">
-
-		<label class="texto">
-			<span>Matrícula:</span>
-			<input type="text" name="matricula" [(ngModel)]="matricula" placeholder="123456789-0">
-		</label>
 
 		<div *ngIf="candidatos && candidatos.length > 0" class="items">
 			<div *ngFor="let candidato of candidatos; first as isFirst">

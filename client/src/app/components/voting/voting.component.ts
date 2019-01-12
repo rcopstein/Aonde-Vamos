@@ -4,6 +4,8 @@ import { DataService } from 'src/app/services/data/data.service';
 import { VotacaoService } from 'src/app/services/votacao/votacao.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { VotesDisplayComponent } from '../votes-display/votes-display.component';
+import { Status } from 'src/app/model/status';
+import { ResultDisplayComponent } from '../result-display/result-display.component';
 
 @Component({
   selector: 'app-voting',
@@ -20,26 +22,24 @@ export class VotingComponent implements OnInit {
 
   selecionado : string;
   candidatos : Array<Restaurante>;
-  matricula : string = "123456789-0";
 
   mostrarVotacao : boolean = true;
   @ViewChild(VotesDisplayComponent) votesDisplay : VotesDisplayComponent;
+  @ViewChild(ResultDisplayComponent) resultDisplay : ResultDisplayComponent;
 
   // Metodos
 
   onSubmit() {
 
     this.habilitado = false;
-    let promise = this.votacaoService.votar(this.data, this.matricula, this.selecionado);
+    let promise = this.votacaoService.votar(this.data, this.selecionado);
 
     promise.then( async (result) => {
 
       if (!(result instanceof HttpErrorResponse)) {
 
-        let votacao = await this.votacaoService.getResultado(this.data);
         this.mostrarVotacao = false;
-
-        this.votesDisplay.votos = votacao._totalVotos;
+        this.carregaResultado();
         return;
 
       }
@@ -54,28 +54,46 @@ export class VotingComponent implements OnInit {
 
   }
 
-  async carregaVotacao() {
+  async carregaVotacao() : Promise<Status> {
 
     let hoje = this.dataService.hoje();
     let amanha = this.dataService.amanha();
 
-    let votacao = await this.votacaoService.getResultado(hoje);
+    let promise = new Promise<[Date, Status]>( async (resolve, reject) => {
 
-    let agora = this.dataService.agora();
-    let final = new Date(votacao._final);
+      let status = await this.votacaoService.getStatus(hoje);
+      let agora = this.dataService.agora();
+      let final = new Date(status._final);
 
-    if (final.getTime() > agora.getTime()) {
+      if (final.getTime() > agora.getTime()) {
 
-      this.data = hoje;
-      this.titulo = "Votação de hoje";
+        resolve([hoje, status]);
 
-    }
-    else {
+      }
+      else {
 
-      this.data = amanha;
-      this.titulo = "Votação de amanhã";
+        status = await this.votacaoService.getStatus(amanha);
+        resolve([amanha, status]);
 
-    }
+      }
+
+    })
+    .then( ([data, status]) => {
+
+      this.data = data;
+      if (data == hoje) {
+        this.titulo = "Votação de hoje!";
+      }
+      else if (data == amanha) {
+        this.titulo = "Votação de amanhã!";
+        this.resultDisplay.data = hoje; // Mostra o resultado da votação de hoje
+      }
+
+      return status;
+
+    });
+
+    return promise;
 
   }
 
@@ -86,12 +104,22 @@ export class VotingComponent implements OnInit {
 
   }
 
+  async carregaResultado() {
+
+    let resultado = await this.votacaoService.getResultado(this.data);
+    if (resultado) this.votesDisplay.votos = resultado._totalVotos;
+
+  }
+
   // Lifecycle
 
   async ngOnInit() {
 
-    await this.carregaVotacao();
-    await this.carregaCandidatos();
+    let status = await this.carregaVotacao();
+
+    this.mostrarVotacao = !status._jaVotou;
+    if (!status._jaVotou) await this.carregaCandidatos();
+    else this.carregaResultado();
 
   }
 

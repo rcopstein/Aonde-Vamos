@@ -1,8 +1,10 @@
-import { mesmoDia, addDias, addHoras, addMinutos } from "../util";
 import { Voto } from "../models/voto";
+import { Status } from "../models/status";
 import { Votacao } from "../models/votacao";
-import { Usuario } from "../models/usuario";
 import { Restaurante } from "../models/restaurante";
+import { mesmoDia, addDias, addHoras, addMinutos } from "../util";
+import { ActionForbiddenError } from "../errors/actionForbiddenError";
+import { InvalidParameterError } from "../errors/invalidParameterError";
 import _RestauranteController, { RestauranteController } from "./restaurante";
 
 export class VotacaoController {
@@ -60,18 +62,26 @@ export class VotacaoController {
 
         // Encontrar aqueles que já foram vencedores na semana corrente
         let exvencedores = new Array<Restaurante>();
-        let dia = (data.getDay() + 1) % 8;
+        let dia = data.getDay();
 
-        for (var i = 1; i <= dia; i++) {
+        for (var i = dia; i > 0; --i) {
             var votacao = this.getResultado(addDias(data, -i));
             exvencedores.push(votacao.vencedor);
         }
 
         // Remover esses restaurantes da lista
-        restaurantes = restaurantes.filter( i => exvencedores.filter( j => i == j ).length == 0 );
+        restaurantes = restaurantes.filter( i => !exvencedores.find( j => i == j ) );
 
         // Devolver os restaurantes restantes
         return restaurantes;
+
+    }
+
+    getStatus(data : Date, ip : string) : Status {
+
+        let jaVotou = this.getVoto(data, ip) != null;
+        let intervalo = this.getIntervaloVotacao(data);
+        return new Status(data, intervalo[0], intervalo[1], jaVotou);
 
     }
 
@@ -83,32 +93,33 @@ export class VotacaoController {
         // Calcular o vencedor
         let resultado = this.calculaVencedor(votos);
 
-        // Calcular as datas de início e final
-        let intervalo = this.getIntervaloVotacao(data);
-
         // Criar objeto Votacao
-        let votacao = new Votacao(data, intervalo[1], intervalo[0], resultado[0], resultado[1]);
+        let votacao = new Votacao(data, resultado[0], resultado[1]);
 
         // Retornar
         return votacao;
 
     }
 
-    getVoto(data : Date, usuario : Usuario) : Voto | null {
+    getVoto(data : Date, ip : string) : Voto | null {
 
-        var result = this._votos.find( item => mesmoDia(data, item.dataVotacao) && item.usuario == usuario );
+        var result = this._votos.find( item => mesmoDia(data, item.dataVotacao) && item.ip == ip );
         return result ? result : null;
 
     }
 
     getIntervaloVotacao(data : Date) : [Date, Date] {
 
+        // Tratar o horário como um valor no UTC, adicionando o fuso horário
+
         var inicio = new Date(data.getTime());
+        inicio.setUTCHours(0, 0, 0, 0);
         inicio = addDias(inicio, -1);
         inicio = addHoras(inicio, 12);
         inicio = addMinutos(inicio, inicio.getTimezoneOffset());
 
         var fim = new Date(data.getTime());
+        fim.setUTCHours(0, 0, 0, 0);
         fim = addHoras(fim, 12);
         fim = addMinutos(fim, fim.getTimezoneOffset());
 
@@ -116,9 +127,23 @@ export class VotacaoController {
 
     }
 
-    addVoto(dataVotacao : Date, dataVoto : Date, usuario : Usuario, restaurante : Restaurante) {
+    addVoto(dataVotacao : Date, dataVoto : Date, ip : string, restaurante : Restaurante) {
 
-        this._votos.push(new Voto(dataVotacao, dataVoto, usuario, restaurante));
+        // Verifica se a data é válida
+        let intervalo = this.getIntervaloVotacao(dataVotacao);
+        if (intervalo[0].getTime() > dataVoto.getTime()) throw new ActionForbiddenError("Horário de votação ainda não iniciado!");
+        if (intervalo[1].getTime() <= dataVoto.getTime()) throw new ActionForbiddenError("Horário de votação já encerrado!");
+
+        // Verifica se já existe um voto desse IP
+        let voto = this.getVoto(dataVotacao, ip);
+        if (voto) throw new ActionForbiddenError("Já existe um voto registrado com esse IP");
+
+        // Verifica se o restaurante é um candidato válido
+        let candidato = this.listCandidatos(dataVotacao).find( i => i == restaurante);
+        if (!candidato) throw new InvalidParameterError("Esse não é um candidato válido nessa votação");
+
+        // Registra o voto
+        this._votos.push(new Voto(dataVotacao, dataVoto, ip, restaurante));
 
     }
 

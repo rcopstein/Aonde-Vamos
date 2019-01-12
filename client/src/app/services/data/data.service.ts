@@ -7,16 +7,29 @@ export class DataService {
 
   // Variaveis
 
-  data : Date;
+  private _data : Date;
+
+  // Propriedades
+
+  private get data() : Date {
+    if (this._data) return this._data;
+    return new Date();
+  }
+
+  private set data(data : Date) {
+    this._data = data;
+  }
 
   // Metodos
 
   hoje() : Date {
-    return this.data;
+    let data = this.data;
+    data.setHours(0, 0, 0, 0);
+    return data;
   }
 
   agora() : Date {
-    return new Date();
+    return this.data;
   }
 
   amanha() : Date {
@@ -27,13 +40,13 @@ export class DataService {
     return new Date(data.getTime() + data.getTimezoneOffset() * 60000);
   }
 
+  // Para debug
+  modificarData(data : Date) {
+    this.data = data;
+  }
+
   // Construtor
 
-  constructor() {
-    this.data = new Date();
-    this.data.setHours(0, 0, 0, 0);
-
-    console.log(this.data);
-  }
+  constructor() {}
 
 }

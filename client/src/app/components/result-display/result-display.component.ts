@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { VotacaoService } from 'src/app/services/votacao/votacao.service';
 import { Votacao } from 'src/app/model/votacao';
 import { DataService } from 'src/app/services/data/data.service';
@@ -8,29 +8,17 @@ import { DataService } from 'src/app/services/data/data.service';
   templateUrl: './result-display.component.html',
   styleUrls: ['./result-display.component.sass']
 })
-export class ResultDisplayComponent implements OnInit {
+export class ResultDisplayComponent {
 
   // Variaveis
 
   resultado : Votacao;
-  deveAparecer : boolean = false;
 
-  // Lifecycle
+  // Propriedades
 
-  async ngOnInit() {
+  @Input() set data(data : Date) {
 
-    let hoje = this.dataService.hoje();
-    let agora = this.dataService.agora();
-    var votacao = await this.votacaoService.getResultado(hoje);
-    let final = new Date(votacao._final);
-
-    if (!votacao || final.getTime() > agora.getTime()) {
-      this.deveAparecer = false;
-    }
-    else {
-      this.deveAparecer = true;
-      this.resultado = votacao;
-    }
+    this.votacaoService.getResultado(data).then( result => this.resultado = result );
 
   }
 

@@ -1,17 +1,3 @@
-export function calculaSemana(data : Date) : number {
-
-    var diaSemana = data.getDay() * 24 * 60 * 60000; // Determina quanto tempo passou desde o início da semana
-    var ultimoDomingo = new Date(data.getTime() - diaSemana);
-    return ultimoDomingo.getTime();
-
-}
-
-export function mesmaSemana(data1 : Date, data2 : Date) : boolean {
-
-    return calculaSemana(data1) == calculaSemana(data2);
-
-}
-
 export function mesmoDia(data1 : Date, data2 : Date) : boolean {
 
     return data1.getFullYear() == data2.getFullYear() &&
@@ -22,18 +8,42 @@ export function mesmoDia(data1 : Date, data2 : Date) : boolean {
 
 export function addMinutos(data : Date, minutos : number) : Date {
 
-    return new Date(data.getTime() + minutos * 60000);
+    return new Date(Date.UTC(
+        data.getUTCFullYear(),
+        data.getUTCMonth(),
+        data.getUTCDate(),
+        data.getUTCHours(),
+        data.getUTCMinutes() + minutos,
+        data.getUTCSeconds(),
+        data.getUTCMilliseconds()
+    ));
 
 }
 
 export function addHoras(data : Date, horas : number) : Date {
 
-    return addMinutos(data, horas * 60);
+    return new Date(Date.UTC(
+        data.getUTCFullYear(),
+        data.getUTCMonth(),
+        data.getUTCDate(),
+        data.getUTCHours() + horas,
+        data.getUTCMinutes(),
+        data.getUTCSeconds(),
+        data.getUTCMilliseconds()
+    ));
 
 }
 
 export function addDias(data : Date, dias : number) : Date {
 
-    return addHoras(data, dias * 24);
+    return new Date(Date.UTC(
+        data.getUTCFullYear(),
+        data.getUTCMonth(),
+        data.getUTCDate() + dias,
+        data.getUTCHours(),
+        data.getUTCMinutes(),
+        data.getUTCSeconds(),
+        data.getUTCMilliseconds()
+    ));
 
 }

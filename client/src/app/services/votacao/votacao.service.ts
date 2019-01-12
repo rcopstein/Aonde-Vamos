@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Votacao } from 'src/app/model/votacao';
 import { Restaurante } from 'src/app/model/restaurante';
+import { Status } from 'src/app/model/status';
 
 @Injectable({
   providedIn: 'root'
@@ -19,11 +20,28 @@ export class VotacaoService {
     return this.domain + base + '/' + data.getFullYear() + '/' + (data.getMonth() + 1) + '/' + data.getDate();
   }
 
+  async getStatus(data : Date) : Promise<Status> {
+
+    // Montar URL
+    let url = this.montarURL(this.baseURL, data);
+
+    // Criar Promise
+    let promise = new Promise<Status>( (resolve, reject) => {
+
+      // Fazer uma chamada HTTP
+      this.http.get<Status>(url).subscribe( item => resolve(item) );
+
+    });
+
+    // Retorna Promise
+    return promise;
+
+  }
+
   async getResultado(data : Date) : Promise<Votacao> {
 
     // Montar URL
-    var votacao : Votacao;
-    let url = this.montarURL(this.baseURL, data);
+    let url = this.montarURL(this.baseURL, data) + '/resultado';
 
     // Criar Promise
     let promise = new Promise<Votacao>( (resolve, reject) => {
@@ -57,16 +75,13 @@ export class VotacaoService {
 
   }
 
-  async votar(data : Date, matricula : string, restaurante : string) : Promise<any> {
+  async votar(data : Date, restaurante : string) : Promise<any> {
 
     // Montar URL
     let url = this.montarURL(this.baseURL, data);
 
     // Montar parametros da request
-    let body = {
-      'restaurante' : restaurante,
-      'matricula' : matricula
-    }
+    let body = { 'restaurante' : restaurante }
 
     // Criar Promise
     let promise = new Promise<any>( (resolve, _) => {
