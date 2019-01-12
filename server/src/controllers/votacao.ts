@@ -153,6 +153,12 @@ export class VotacaoController {
 
     }
 
+    clear() {
+
+        this._votos = new Array<Voto>();
+        
+    }
+
     // Construtor
 
     constructor(private restauranteController : RestauranteController) {

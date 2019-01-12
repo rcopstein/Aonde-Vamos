@@ -96,6 +96,7 @@ describe('Votacao Controller', () => {
   it('deve devolver corretamente os votos do dia especificado', () => {
     
     var data = new Date();
+    data.setHours(0, 0, 0, 0);
 
     controller.addVoto(data, data, mock.usuarios[0], mock.restaurantes[0]);
     controller.addVoto(addDias(data, 1), addDias(data, 1), mock.usuarios[1], mock.restaurantes[1]);
@@ -164,6 +165,7 @@ describe('Votacao Controller', () => {
 
     var status : Status;
     var data = new Date();
+    data.setHours(0, 0, 0, 0);
 
     // Antes de votar
 
@@ -188,6 +190,7 @@ describe('Votacao Controller', () => {
 
     var data = new Date();
     var resultado : Votacao;
+    data.setHours(0, 0, 0, 0);
 
     let tabela = new Map<String, number>();
     for (var i = 0; i < mock.usuarios.length; i++) {
@@ -209,6 +212,7 @@ describe('Votacao Controller', () => {
   it ('deve devolver o voto do usuário especificado no dia especificado, se existir', () => {
 
     var data = new Date();
+    data.setHours(0, 0, 0, 0);
 
     controller.addVoto(data, data, mock.usuarios[1], mock.restaurantes[1]);
     var result = controller.getVoto(data, mock.usuarios[1]);
@@ -228,6 +232,7 @@ describe('Votacao Controller', () => {
   it ('deve devolver o horário de votação corretamente', () => {
 
     let data = new Date();
+    data.setHours(0, 0, 0, 0);
     let diaAnterior = addDias(data, -1);
     let intervalo = controller.getIntervaloVotacao(data);
 
@@ -246,7 +251,7 @@ describe('Votacao Controller', () => {
       .to.be.equal(12);
 
     expect(inicio.getTime(), "O início não é antes do final").to.be.lessThan(final.getTime());
-    expect(final.getTime(), "O final não é depos do início do dia").to.be.greaterThan(data.getTime());
+    expect(final.getTime(), "O final não é depois do início do dia").to.be.greaterThan(data.getTime());
     expect(inicio.getTime(), "O início não é antes do início do dia").to.be.lessThan(data.getTime());
 
   });
@@ -254,6 +259,7 @@ describe('Votacao Controller', () => {
   it ('deve contabilizar um novo voto corretamente', () => {
 
     let data = new Date();
+    data.setHours(0, 0, 0, 0);
     var count = controller.count();
 
     controller.addVoto(data, data, mock.usuarios[0], mock.restaurantes[0]);
@@ -265,6 +271,7 @@ describe('Votacao Controller', () => {
 
     var explain : string;
     let data = new Date();
+    data.setHours(0, 0, 0, 0);
     let usuario = mock.usuarios[0];
     let restaurante = mock.restaurantes[0];
     let [inicio, fim] = controller.getIntervaloVotacao(data);
@@ -287,6 +294,7 @@ describe('Votacao Controller', () => {
 
     var explain : string;
     let data = new Date();
+    data.setHours(0, 0, 0, 0);
     let usuario1 = mock.usuarios[0];
     let usuario2 = mock.usuarios[1];
     let restaurante = mock.restaurantes[0];
@@ -306,6 +314,7 @@ describe('Votacao Controller', () => {
 
     var explain : string;
     let data = new Date();
+    data.setHours(0, 0, 0, 0);
     let usuario = mock.usuarios[0];
     let restaurante1 = mock.restaurantes[0];
     let restaurante2 = mock.restaurantes[1];

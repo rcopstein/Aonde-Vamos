@@ -6,7 +6,7 @@
     "start": "node dist/index.js",
     "compile": "tsc",
     "test-int": "mocha -r ts-node/register test/routes/**/*.spec.ts",
-    "test-unit": "mocha -r ts-node/register test/*.spec.ts test/controllers/*.spec.ts test/models/*.spec.ts"
+    "test-unit": "mocha -r ts-node/register test/*.spec.ts test/models/**/*.spec.ts test/controllers/**/*.spec.ts test/middlewares/**/*/spec.ts"
   },
   "author": "Rafael Copstein",
   "license": "ISC",
@@ -24,6 +24,7 @@
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
     "mocha": "^5.2.0",
+    "node-mocks-http": "^1.7.3",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.2"
   }
