@@ -1,27 +1,23 @@
-# AondeVamosClient
+Aonde Vamos? (Cliente)
+=====================
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
+O cliente de _Aonde Vamos?_ foi contruído usando o framework [Angular](https://angular.io). Ele permite que um usuário veja os restaurantes candidatos para o almoço do dia atual registre um voto no seu restaurante de preferência.
 
-## Development server
+Após o horário de encerramento de uma votação, o resultado da votação é mostrado e a votação do dia seguinte é aberta a receber votos.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Execução
 
-## Code scaffolding
+Para executar o servidor é necessário, primeiro, baixar as dependências do programa. Isso é feito usando o comando na raiz do projeto:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```bash
+npm install
+```
 
-## Build
+Em seguida, abrimos um servidor de desenvolvimento que serve o cliente usando o comando:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+```bash
+ng serve
+```
 
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+O cliente então pode ser acessado através do endereço [http://localhost:4200/](http://localhost:4200/).
+Para uma instalação em modo de produção, deve-se consultar a documentação com relação ao [_deployment_](https://angular.io/guide/deployment).
