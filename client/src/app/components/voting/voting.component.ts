@@ -23,91 +23,136 @@ export class VotingComponent implements OnInit {
   selecionado : string;
   candidatos : Array<Restaurante>;
 
-  mostrarVotacao : boolean = true;
+  mostrarVotacao : boolean = false;
+  mostrarResultado : boolean = false;
+  mostrarErroEnvio : boolean = false;
+  mostrarErroGeral : boolean = false;
+
   @ViewChild(VotesDisplayComponent) votesDisplay : VotesDisplayComponent;
   @ViewChild(ResultDisplayComponent) resultDisplay : ResultDisplayComponent;
 
   // Metodos
 
-  onSubmit() {
+  async onSubmit() {
 
     this.habilitado = false;
-    let promise = this.votacaoService.votar(this.data, this.selecionado);
+    this.mostrarErroEnvio = false;
+    let result = await this.votacaoService.votar(this.data, this.selecionado);
 
-    promise.then( async (result) => {
+    if (result && !(result instanceof HttpErrorResponse)) {
 
-      if (!(result instanceof HttpErrorResponse)) {
+      this.mostrarVotacao = false;
+      this.carregaVotos();
+      return;
 
-        this.mostrarVotacao = false;
-        this.carregaResultado();
-        return;
+    }
 
-      }
-
-      if (result.status == 400) console.log("Matrícula possui um valor inválido!");
-      else if (result.status == 404) console.log("Não foi encontrado um usuário com essa matrícula!");
-      else console.log("Falha ao enviar formulário, tente novamente!");
-
-      this.habilitado = true;
-
-    });
+    this.mostrarErroEnvio = true;
+    this.habilitado = true;
 
   }
 
-  async carregaVotacao() : Promise<Status> {
+  onRetry() {
 
-    let hoje = this.dataService.hoje();
-    let amanha = this.dataService.amanha();
+    this.carregar();
 
-    let promise = new Promise<[Date, Status]>( async (resolve, reject) => {
+  }
 
-      let status = await this.votacaoService.getStatus(hoje);
+  async carregaStatus(continuar : boolean = true, data? : Date) : Promise<[Date, Status]> {
+
+    return new Promise<[Date, Status]>( async (resolve, reject) => {
+
+      // Se a data não for especificada, carrega a data de hoje
+      if (!data) data = this.dataService.hoje();
+
+      // Tenta carregar o status
+      let status = await this.votacaoService.getStatus(data);
+      if (status instanceof HttpErrorResponse) return resolve(null);
+
+      // Verifica se a votação ainda está em andamento
       let agora = this.dataService.agora();
       let final = new Date(status._final);
 
-      if (final.getTime() > agora.getTime()) {
+      if (final.getTime() <= agora.getTime()) {
 
-        resolve([hoje, status]);
+        // Tenta o dia seguinte, caso especificado
+
+        if (!continuar) return resolve(null);
+        this.resultDisplay.data = data;
+        let novaData = new Date(data.getTime() + 24 * 60 * 60000);
+        resolve(await this.carregaStatus(false, novaData));
 
       }
-      else {
-
-        status = await this.votacaoService.getStatus(amanha);
-        resolve([amanha, status]);
-
-      }
-
-    })
-    .then( ([data, status]) => {
-
-      this.data = data;
-      if (data == hoje) {
-        this.titulo = "Votação de hoje!";
-      }
-      else if (data == amanha) {
-        this.titulo = "Votação de amanhã!";
-        this.resultDisplay.data = hoje; // Mostra o resultado da votação de hoje
-      }
-
-      return status;
+      else resolve([data, status]);
 
     });
-
-    return promise;
 
   }
 
   async carregaCandidatos() {
 
-    this.candidatos = await this.votacaoService.getCandidatos(this.data);
-    if (this.candidatos && this.candidatos.length > 0) this.selecionado = this.candidatos[0]._id;
+    let resultado = await this.votacaoService.getCandidatos(this.data);
+    // resultado = null; // Debugging
+
+    if (!resultado || resultado instanceof HttpErrorResponse) {
+
+      // Falha ao carregar os candidatos
+      this.mostrarErroGeral = true;
+      return;
+
+    }
+
+    this.candidatos = resultado;
+    if (this.candidatos.length > 0) this.selecionado = this.candidatos[0]._id;
+    this.mostrarVotacao = true;
 
   }
 
-  async carregaResultado() {
+  async carregaVotos() {
 
     let resultado = await this.votacaoService.getResultado(this.data);
-    if (resultado) this.votesDisplay.votos = resultado._totalVotos;
+    // resultado = null; // Debugging
+
+    if (!resultado || resultado instanceof HttpErrorResponse) {
+
+      // Falha ao carregar os votos
+      this.mostrarErroGeral = true;
+      return;
+
+    }
+
+    this.votesDisplay.votos = resultado._totalVotos;
+    this.mostrarResultado = true;
+
+  }
+
+  carregaTitulo(data : Date) {
+
+    let hoje = this.dataService.hoje();
+    if (hoje.getDate() == data.getDate()) this.titulo = "Votação de Hoje!";
+    else this.titulo = "Votação de Amanhã";
+
+  }
+
+  async carregar() {
+
+    // Esconder erros
+    this.mostrarErroGeral = false;
+    this.mostrarVotacao = false;
+
+    // Tentar carregar o status correto
+    let status = await this.carregaStatus();
+    if (!status) { this.mostrarErroGeral = true; return; }
+
+    // Armazena data atual
+    this.data = status[0];
+
+    // Carregar o título de acordo
+    this.carregaTitulo(status[0]);
+
+    // Verifica status do voto
+    if (status[1]._jaVotou) this.carregaVotos();
+    else this.carregaCandidatos();
 
   }
 
@@ -115,11 +160,7 @@ export class VotingComponent implements OnInit {
 
   async ngOnInit() {
 
-    let status = await this.carregaVotacao();
-
-    this.mostrarVotacao = !status._jaVotou;
-    if (!status._jaVotou) await this.carregaCandidatos();
-    else this.carregaResultado();
+    this.carregar();
 
   }
 

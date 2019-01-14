@@ -16,11 +16,13 @@ A mesma está dividia em subpastas de acordo com a responsabilidade dos arquivos
 
 ## Destaques
 
-O servidor foi projetado pensando em fácil manutenção e testes. Essa filosofia pode ser observada nos [controladores](src/controllers) que expõe tanto uma instância única (_singleton_) quanto um construtor público, o que permite que elas sejam testadas individualmente. Além disso, controladores que necessitam acessar outros controladores recebem uma instância do mesmo no construtor (_dependency injection_), permitindo desassociação (_decoupling_) das classes e facilitando o teste.
+- O servidor foi projetado pensando em fácil manutenção e testes. Essa filosofia pode ser observada nos [controladores](src/controllers) que expõe tanto uma instância única (_singleton_) quanto um construtor público, o que permite que elas sejam testadas individualmente. Além disso, controladores que necessitam acessar outros controladores recebem uma instância do mesmo no construtor (_dependency injection_), permitindo desassociação (_decoupling_) das classes e facilitando o teste.
 
-O tratamento de rotas REST foi desenvolvido seguindo o padrão da biblioteca [Express](https://github.com/expressjs/express) de _middlewares_. Middlewares são funções intermediárias entre a requisição REST e sua ação no controlador. Neste projeto elas foram usadas para fazer a validação de parâmetros comuns a múltiplas requisições como data e restaurante votado, e para fazer a captura de informações, como o endereço IP do usuário.
+- O tratamento de rotas REST foi desenvolvido seguindo o padrão da biblioteca [Express](https://github.com/expressjs/express) de _middlewares_. Middlewares são funções intermediárias entre a requisição REST e sua ação no controlador. Neste projeto elas foram usadas para fazer a validação de parâmetros comuns a múltiplas requisições como data e restaurante votado, e para fazer a captura de informações, como o endereço IP do usuário.
 
-Dentro dos moldes da arquitetura MVC, os controladores desconhecem o conceito de requisição HTTP, e trabalham de maneira isolada. Eventuais erros lógicos que venham a ocorrer no controlador são expostos como _Errors_ (similares à exceções em linguagens como Java e C#) e deixam que os componentes de [rotas](src/routes) transformem os erros em respostas HTTP apropriadas.
+- Dentro dos moldes da arquitetura MVC, os controladores desconhecem o conceito de requisição HTTP, e trabalham de maneira isolada. Eventuais erros lógicos que venham a ocorrer no controlador são expostos como _Errors_ (similares à exceções em linguagens como Java e C#) e deixam que os componentes de [rotas](src/routes) transformem os erros em respostas HTTP apropriadas.
+
+- Para facilitar o _debugging_ do servidor foram adicionadas rotinas para reconhecer um parâmetro "dataAtual" em requisições feitas ao servidor. Quando esse parâmetro for encontrado, ele será convertido em uma data e, esta, será usada como referência para o horário atual. Dessa forma, é possível testar as funcionalidades sem que o horário da execução do teste influencie no mesmo.
 
 ## Execução
 

@@ -20,3 +20,4 @@ As votações para o almoço de cada dia se iniciam às 12:00 do dia anterior e 
 
 - [ ] Conectar com uma base de dados persistente ao invés de armazenar em memória
 - [ ] Escrever testes para os componentes, serviços e testes _e2e_ no cliente
+- [ ] Criar _dockerfiles_ para testar o programa usando Docker

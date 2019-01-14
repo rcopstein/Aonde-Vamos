@@ -2,23 +2,35 @@
 
 	<app-result-display></app-result-display>
 
-	<h3>{{ titulo }}</h3>
+	<h3 *ngIf="mostrarResultado || mostrarVotacao">{{ titulo }}</h3>
 
-	<app-votes-display [hidden]="mostrarVotacao"></app-votes-display>
+	<app-votes-display [hidden]="!mostrarResultado"></app-votes-display>
 
-	<form #voteForm="ngForm" (ngSubmit)="onSubmit()" [hidden]="!mostrarVotacao">
-
-		<div *ngIf="candidatos && candidatos.length > 0" class="items">
-			<div *ngFor="let candidato of candidatos; first as isFirst">
-				<label class="item">
-					<input type="radio" name="restaurante" [value]="candidato._id" [(ngModel)]="selecionado">
-					<span>{{ candidato._nome }}</span>
-				</label>
-				<br />
-			</div>
+	<div *ngIf="mostrarErroGeral" class="erroGeral">
+		<div style="text-align: center;">
+			<p>Falha ao carregar votação. Por favor tente novamente!</p>
+			<button class="retry" (click)="onRetry()">Tentar Novamente</button>
 		</div>
+	</div>
 
-		<button type="submit" [disabled]="!selecionado && habilitado">Enviar</button>
+	<div [hidden]="!mostrarVotacao">
 
-	</form>
+		<form #voteForm="ngForm" (ngSubmit)="onSubmit()" [hidden]="!mostrarVotacao">
+
+			<div *ngIf="candidatos && candidatos.length > 0" class="items">
+				<div *ngFor="let candidato of candidatos; first as isFirst">
+					<label class="item">
+						<input type="radio" name="restaurante" [value]="candidato._id" [(ngModel)]="selecionado">
+						<span>{{ candidato._nome }}</span>
+					</label>
+					<br />
+				</div>
+			</div>
+
+			<button type="submit" [disabled]="!selecionado && habilitado">Enviar</button>
+			<p *ngIf="mostrarErroEnvio" class="error">Erro ao enviar o voto. Por favor, tente novamente!</p>
+
+		</form>
+	</div>
+
 </div>

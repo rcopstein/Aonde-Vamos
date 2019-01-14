@@ -25,16 +25,8 @@ export class VotacaoService {
     // Montar URL
     let url = this.montarURL(this.baseURL, data);
 
-    // Criar Promise
-    let promise = new Promise<Status>( (resolve, reject) => {
-
-      // Fazer uma chamada HTTP
-      this.http.get<Status>(url).subscribe( item => resolve(item) );
-
-    });
-
     // Retorna Promise
-    return promise;
+    return this.http.get<Status>(url).toPromise().catch( e => e );
 
   }
 
@@ -43,16 +35,8 @@ export class VotacaoService {
     // Montar URL
     let url = this.montarURL(this.baseURL, data) + '/resultado';
 
-    // Criar Promise
-    let promise = new Promise<Votacao>( (resolve, reject) => {
-
-      // Fazer uma chamada HTTP
-      this.http.get<Votacao>(url).subscribe( item => resolve(item) );
-
-    });
-
     // Retorna Promise
-    return promise;
+    return this.http.get<Votacao>(url).toPromise().catch( e => e );
 
   }
 
@@ -62,16 +46,8 @@ export class VotacaoService {
     let url = this.montarURL(this.baseURL, data);
     url += "/candidatos";
 
-    // Criar Promise
-    let promise = new Promise<Array<Restaurante>>( (resolve, reject) => {
-
-      // Fazer uma chamada HTTP
-      this.http.get<Array<Restaurante>>(url).subscribe( result => resolve(result) );
-
-    });
-
     // Retorna Promise
-    return promise;
+    return this.http.get<Array<Restaurante>>(url).toPromise().catch( e => e );
 
   }
 
@@ -83,21 +59,8 @@ export class VotacaoService {
     // Montar parametros da request
     let body = { 'restaurante' : restaurante }
 
-    // Criar Promise
-    let promise = new Promise<any>( (resolve, _) => {
-
-      // Fazer uma chamada HTTP
-      this.http.post(url, body, { responseType: "text" }).subscribe(
-
-        _ => resolve(true),
-        error => { console.log(error); resolve(error) }
-
-      );
-
-    });
-
     // Retorna Promise
-    return promise;
+    return this.http.post(url, body, { responseType: "text" }).toPromise().catch( e => e );
 
   }
 

@@ -1,6 +1,8 @@
+@import '~src/variables'
+    
 .wrapper
 
-    div
+    section
         font-family: 'Raleway', sans-serif
         background: #eeeeee
         border-radius: 4px
@@ -16,3 +18,17 @@
 
         p
             margin: 0px
+
+        span.retry
+            color: #7CC6FE
+            cursor: pointer
+
+            &:hover
+                color: $primary-color-hover
+
+            &:active
+                color: $primary-color-pressed
+
+            &:disabled
+                color: default
+                color: $primary-color-disabled
